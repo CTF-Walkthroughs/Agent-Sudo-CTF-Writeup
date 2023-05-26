@@ -1,3 +1,5 @@
+![image](https://github.com/Benjamin-James-Reitz/Agent-Sudo-CTF-Writeup/assets/97861439/87d1ad0c-8e43-401c-a36b-ce7365a976c0)
+
 # Agent-Sudo-CTF-Writeup
 This is the writeup for the Agent Sudo CTF on TryHackMe!
 https://tryhackme.com/room/agentsudoctf
@@ -42,7 +44,7 @@ Now we can grab the three files from the ftp server and continue our enumeration
 
 ![image](https://github.com/Benjamin-James-Reitz/Agent-Sudo-CTF-Writeup/assets/97861439/33f3d16d-10f9-40c1-84ee-d13efb86db7e)
 
-##**GAINING INITIAL FOOTHOLD VIA HIDDEN DATA**
+## **GAINING INITIAL FOOTHOLD VIA HIDDEN DATA**
 
 This message greets us in the txt file
 
