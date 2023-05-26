@@ -1,24 +1,29 @@
 # Agent-Sudo-CTF-Writeup
 This is the writeup for the Agent Sudo CTF on TryHackMe!
 https://tryhackme.com/room/agentsudoctf
+
 tags: enumerate, hash cracking, exploit, brute-force
 
-**ENUMERATION**
+
+## **ENUMERATION**
 
 First let's kick things off with some classic nmap scans to get a lay of the land.
 
 export IP=10.10.246.36
 export myIP=10.13.24.71
 
-nmap -F $IP
+`nmap -F $IP`
 
 ![image](https://github.com/Benjamin-James-Reitz/Agent-Sudo-CTF-Writeup/assets/97861439/55cd8569-57ae-4ae5-8e5c-d67451f26f67)
 
 Next, we'll start another scan in the background to check the higher ports.
 
-sudo nmap -p- $IP
+`sudo nmap -p- $IP`
 
-Walking the website, we find the following message.
+### WALKING THE WEBSITE
+
+We find the following message.
+
 ![image](https://github.com/Benjamin-James-Reitz/Agent-Sudo-CTF-Writeup/assets/97861439/eba6986b-8560-42f1-8a74-b726792e9d6f)
 
 From this message we can deduce that we need to modify the user-agent header on the http request to get to the next hint. The hint suggests using the  header editor extension on firefox called "user-agent switcher and manager. The text mentions that there are 25 agents. Maybe we can try each letter of the alphabet as the user-agent to see who we can find. After trying the first few letters we strike gold with agent C and are redirected to: http://10.10.246.36/agent_C_attention.php
@@ -27,8 +32,8 @@ From this message we can deduce that we need to modify the user-agent header on 
 
 It looks like Agent C is Chris. Let's try to bruteforce the FTP as user Chris with hydra.
 
-hydra -l chris -P /usr/share/wordlists/SecLists/Passwords/500-worst-passwords.txt ftp://10.10.246.36
-
+`hydra -l chris -P /usr/share/wordlists/SecLists/Passwords/500-worst-passwords.txt ftp://10.10.246.36
+`
 It worked! 
 
 ![image](https://github.com/Benjamin-James-Reitz/Agent-Sudo-CTF-Writeup/assets/97861439/c7035f3a-0371-4561-b7d7-6154c44a47ed)
@@ -37,12 +42,13 @@ Now we can grab the three files from the ftp server and continue our enumeration
 
 ![image](https://github.com/Benjamin-James-Reitz/Agent-Sudo-CTF-Writeup/assets/97861439/33f3d16d-10f9-40c1-84ee-d13efb86db7e)
 
-**GAINING INITIAL FOOTHOLD VIA HIDDEN DATA**
+##**GAINING INITIAL FOOTHOLD VIA HIDDEN DATA**
 
 This message greets us in the txt file
+
 ![image](https://github.com/Benjamin-James-Reitz/Agent-Sudo-CTF-Writeup/assets/97861439/00ff7daf-ec6c-47d5-be68-d7912eaf5a00)
 
-steghide extract -sf cute-alien.jpeg
+`steghide extract -sf cute-alien.jpeg`
 
 ![image](https://github.com/Benjamin-James-Reitz/Agent-Sudo-CTF-Writeup/assets/97861439/bad3a9a1-38d6-47e6-9236-947da98af8ab)
 
@@ -74,7 +80,7 @@ Let's fire up steghide again to find the SSH password for James.
 
 ![image](https://github.com/Benjamin-James-Reitz/Agent-Sudo-CTF-Writeup/assets/97861439/0cbef846-1f86-4df1-a6ff-49432cc4ed9a)
 
-**ENUMERATING SSH**
+## **ENUMERATING SSH**
 
 Now we can log in as James via ssh with the new password.
 
@@ -83,29 +89,26 @@ Let's grab the user.txt flag.
 ![image](https://github.com/Benjamin-James-Reitz/Agent-Sudo-CTF-Writeup/assets/97861439/b1aea0f9-2361-4db8-a3cb-7cec40203434)
 
 
-**LOCAL ENUMERATION AND EXPLOITATION**
+## **LOCAL ENUMERATION AND EXPLOITATION**
 
-Checking sudo -l shows a curious permission.
+Checking `sudo -l` shows a curious permission.
 
 ![image](https://github.com/Benjamin-James-Reitz/Agent-Sudo-CTF-Writeup/assets/97861439/9817d8b4-ff6a-4b30-9cf0-5a3e0f0304dc)
 
-A quick google search for exploits leads me to CVE-2019-14287.
+A quick google search for exploits leads me to `CVE-2019-14287`.
 
 We can bypass the sudo authentication with the command:
-sudo -u#-1 /bin/bash
-
-![image](https://github.com/Benjamin-James-Reitz/Agent-Sudo-CTF-Writeup/assets/97861439/dcf9086a-dc14-46ae-9654-a61678ff7d66)
+`sudo -u#-1 /bin/bash`
 
 And now we are root and can grab the root flag and finish the last question.
 
 
-**PRIVESC**
+## **PRIVESC**
 
 ![image](https://github.com/Benjamin-James-Reitz/Agent-Sudo-CTF-Writeup/assets/97861439/718e5301-c827-4168-bf8d-d63d7609027b)
 
 Let's grab the file Alien_autospy.jpg by spinning up a simple http server and grabbing the file to our attacker machine via the browser. We can reverse image search this picture on google and find that it relates to: Roswell Alien Autopsy
 
 The final question is reveled in the root.txt, the name of Agent R.
-![Uploading image.png…]()
 
-Thanks for watching!
+Thanks for reading!
